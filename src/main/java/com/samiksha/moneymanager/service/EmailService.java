@@ -25,7 +25,8 @@ public class EmailService {
 			message.setText(body);
 			mailSender.send(message);
 		}catch (Exception e){
-			throw new RuntimeException(e.getMessage());
+			e.printStackTrace();
+		    throw new RuntimeException("Email sending failed", e);
 		}
 	}
 }

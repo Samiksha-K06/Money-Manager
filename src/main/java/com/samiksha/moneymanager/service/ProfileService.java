@@ -38,10 +38,10 @@ public class ProfileService {
 		newProfile.setActivationToken(UUID.randomUUID().toString());
 		newProfile = profileRepository.save(newProfile);
 //		//send activation email
-//		String activationLink = activationURL+"/api/v1.0/activate?token=" + newProfile.getActivationToken();
-//		String subject = "Activate your Money Manager Account";
-//		String body = "Click the below link to activate your account "+ activationLink;
-//		emailService.sendEmail(newProfile.getEmail(), subject, body);
+		String activationLink = activationURL+"/api/v1.0/activate?token=" + newProfile.getActivationToken();
+		String subject = "Activate your Money Manager Account";
+		String body = "Click the below link to activate your account "+ activationLink;
+		emailService.sendEmail(newProfile.getEmail(), subject, body);
 		
 		return toDTO(newProfile);		
 	}
