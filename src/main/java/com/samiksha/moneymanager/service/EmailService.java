@@ -1,34 +1,55 @@
 package com.samiksha.moneymanager.service;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.stereotype.Service;
+import java.util.List;
+import java.util.Map;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
-@RequiredArgsConstructor
 public class EmailService {
-	
-	private final JavaMailSender mailSender;
-	
-	@Value("${spring.mail.properties.smtp.from}")
-	private String fromEmail;
-	
-	public void sendEmail(String to, String subject, String body) {
-		System.out.println("Before sending email");
-		try {
-			SimpleMailMessage message = new SimpleMailMessage();
-			message.setFrom(fromEmail);
-			message.setTo(to);
-			message.setSubject(subject);
-			message.setText(body);
-			mailSender.send(message);
-			 System.out.println("Email sent successfully");
-		}catch (Exception e){
-			e.printStackTrace();
-		    throw new RuntimeException("Email sending failed", e);
-		}
-	}
+
+    @Value("${brevo.api.key}")
+    private String apiKey;
+
+    @Value("${brevo.from.email}")
+    private String fromEmail;
+
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    public void sendEmail(String to, String subject, String body) {
+
+        System.out.println("Before sending email");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(apiKey);
+
+        Map<String, Object> request = Map.of(
+                "sender", Map.of(
+                        "name", "Money Manager",
+                        "email", fromEmail
+                ),
+                "to", List.of(
+                        Map.of("email", to)
+                ),
+                "subject", subject,
+                "textContent", body
+        );
+
+        HttpEntity<Map<String, Object>> entity =
+                new HttpEntity<>(request, headers);
+
+        restTemplate.postForEntity(
+                "https://api.brevo.com/v3/smtp/email",
+                entity,
+                String.class
+        );
+
+        System.out.println("Email sent successfully");
+    }
 }
