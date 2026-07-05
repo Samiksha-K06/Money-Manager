@@ -13,10 +13,11 @@ public class EmailService {
 	
 	private final JavaMailSender mailSender;
 	
-	@Value("${spring.mail.from}")
+	@Value("${spring.mail.properties.smtp.from}")
 	private String fromEmail;
 	
 	public void sendEmail(String to, String subject, String body) {
+		System.out.println("Before sending email");
 		try {
 			SimpleMailMessage message = new SimpleMailMessage();
 			message.setFrom(fromEmail);
@@ -24,6 +25,7 @@ public class EmailService {
 			message.setSubject(subject);
 			message.setText(body);
 			mailSender.send(message);
+			 System.out.println("Email sent successfully");
 		}catch (Exception e){
 			e.printStackTrace();
 		    throw new RuntimeException("Email sending failed", e);
