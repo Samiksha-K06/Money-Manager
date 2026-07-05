@@ -27,7 +27,7 @@ public class EmailService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(apiKey);
+        headers.set("api-key", apiKey);   // ✅ FIX
 
         Map<String, Object> request = Map.of(
                 "sender", Map.of(
@@ -38,7 +38,7 @@ public class EmailService {
                         Map.of("email", to)
                 ),
                 "subject", subject,
-                "textContent", body
+                "htmlContent", body   // better than textContent
         );
 
         HttpEntity<Map<String, Object>> entity =
