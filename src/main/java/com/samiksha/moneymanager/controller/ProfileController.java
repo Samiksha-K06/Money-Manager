@@ -39,20 +39,31 @@ public class ProfileController {
 	}
 	
 	@PostMapping("/login")
-	public ResponseEntity<Map<String, Object>> login(@RequestBody AuthDTO authDTO){
-		try {
-			if(!profileService.isAccountActive(authDTO.getEmail())) {
-				return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of(
-						"message", "Account is not activate. Please activate your account first."
-				));
-			}
-			Map<String, Object> response = profileService.authenticateAndGenerateToken(authDTO);
-			return ResponseEntity.ok(response);
-		}catch(Exception e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
-						"message", e.getMessage()
-					));
-		}
+	public ResponseEntity<Map<String, Object>> login(@RequestBody AuthDTO authDTO) {
+	    try {
+
+	        // Check whether account exists
+	        if (!profileService.profileExists(authDTO.getEmail())) {
+	            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+	                    Map.of("message", "Account not found. Please register first.")
+	            );
+	        }
+
+	        // Check whether account is activated
+	        if (!profileService.isAccountActive(authDTO.getEmail())) {
+	            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+	                    Map.of("message", "Please activate your account first.")
+	            );
+	        }
+
+	        Map<String, Object> response = profileService.authenticateAndGenerateToken(authDTO);
+	        return ResponseEntity.ok(response);
+
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+	                Map.of("message", e.getMessage())
+	        );
+	    }
 	}
 	
 	@GetMapping("/profile")

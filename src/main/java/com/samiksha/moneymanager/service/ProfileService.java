@@ -46,6 +46,10 @@ public class ProfileService {
 		return toDTO(newProfile);		
 	}
 	
+	public boolean profileExists(String email) {
+	    return profileRepository.existsByEmail(email);
+	}
+	
 	public ProfileEntity toEntity(ProfileDTO profileDTO) {
 		return ProfileEntity.builder()
 				.id(profileDTO.getId())
