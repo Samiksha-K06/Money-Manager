@@ -1,5 +1,6 @@
 package com.samiksha.moneymanager.service;
 
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -23,11 +24,9 @@ public class EmailService {
 
     public void sendEmail(String to, String subject, String body) {
 
-        System.out.println("Before sending email");
-
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("api-key", apiKey);   // ✅ FIX
+        headers.set("api-key", apiKey);
 
         Map<String, Object> request = Map.of(
                 "sender", Map.of(
@@ -38,7 +37,7 @@ public class EmailService {
                         Map.of("email", to)
                 ),
                 "subject", subject,
-                "htmlContent", body   // better than textContent
+                "htmlContent", body
         );
 
         HttpEntity<Map<String, Object>> entity =
@@ -51,5 +50,47 @@ public class EmailService {
         );
 
         System.out.println("Email sent successfully");
+    }
+
+    public void sendEmailWithAttachment(String to,
+                                        String subject,
+                                        String body,
+                                        byte[] attachment,
+                                        String filename) {
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("api-key", apiKey);
+
+        String base64Attachment = Base64.getEncoder().encodeToString(attachment);
+
+        Map<String, Object> request = Map.of(
+                "sender", Map.of(
+                        "name", "Money Manager",
+                        "email", fromEmail
+                ),
+                "to", List.of(
+                        Map.of("email", to)
+                ),
+                "subject", subject,
+                "htmlContent", body,
+                "attachment", List.of(
+                        Map.of(
+                                "name", filename,
+                                "content", base64Attachment
+                        )
+                )
+        );
+
+        HttpEntity<Map<String, Object>> entity =
+                new HttpEntity<>(request, headers);
+
+        restTemplate.postForEntity(
+                "https://api.brevo.com/v3/smtp/email",
+                entity,
+                String.class
+        );
+
+        System.out.println("Email with attachment sent successfully");
     }
 }
