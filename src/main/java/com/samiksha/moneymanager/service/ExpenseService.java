@@ -95,6 +95,25 @@ public class ExpenseService {
 				.build();
 	}
 	
+	// Get expenses for current user between two dates
+	public List<ExpenseDTO> getExpensesBetweenForCurrentUser(
+	        LocalDate startDate,
+	        LocalDate endDate) {
+
+	    ProfileEntity profile = profileService.getCurrentProfile();
+
+	    List<ExpenseEntity> list =
+	            expenseRepository.findByProfileIdAndDateBetween(
+	                    profile.getId(),
+	                    startDate,
+	                    endDate
+	            );
+
+	    return list.stream()
+	            .map(this::toDTO)
+	            .toList();
+	}
+	
 	private ExpenseDTO toDTO(ExpenseEntity entity) {
 		return ExpenseDTO.builder()
 				.id(entity.getId())
