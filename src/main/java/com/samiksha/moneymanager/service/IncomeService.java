@@ -44,6 +44,36 @@ public class IncomeService {
 			return list.stream().map(this::toDTO).toList();
 		}
 		
+		// Get incomes between two dates for current user
+		public List<IncomeDTO> getIncomesBetweenForCurrentUser(
+		        LocalDate startDate,
+		        LocalDate endDate) {
+
+		    ProfileEntity profile = profileService.getCurrentProfile();
+
+		    List<IncomeEntity> list =
+		            incomeRepository.findByProfileIdAndDateBetween(
+		                    profile.getId(),
+		                    startDate,
+		                    endDate
+		            );
+
+		    return list.stream()
+		            .map(this::toDTO)
+		            .toList();
+		}
+		
+		// Get total income between two dates for current user
+		public BigDecimal getTotalIncomeBetweenForCurrentUser(
+		        LocalDate startDate,
+		        LocalDate endDate) {
+
+		    return getIncomesBetweenForCurrentUser(startDate, endDate)
+		            .stream()
+		            .map(IncomeDTO::getAmount)
+		            .reduce(BigDecimal.ZERO, BigDecimal::add);
+		}
+		
 	//delete income by id for current user
 		public void deleteIncome(Long incomeId) {
 			ProfileEntity profile = profileService.getCurrentProfile();

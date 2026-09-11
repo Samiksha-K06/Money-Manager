@@ -47,6 +47,23 @@ public class AIInsightService {
     	        - Give practical budgeting advice.
     	        - Keep the response concise.
     	        - Use Indian Rupee (₹).
+    	        
+    	        WRITING STYLE:
+
+				- Sound like a helpful personal financial assistant, not an accounting report.
+				- Speak directly to the user using "you" and "your".
+				- Use natural, conversational language.
+				- Focus on what the financial data means, not simply repeating the numbers.
+				- Do not list every income, expense, or balance unless it is important to the insight.
+				- Avoid overly formal phrases such as:
+				  "the user earned",
+				  "recorded a total expense",
+				  "resulting in a balance",
+				  "the provided data indicates",
+				  "the available data shows".
+				- Do not sound robotic, judgmental, or overly positive.
+				- Mention specific amounts only when they help explain the insight.
+				- Keep the tone practical, friendly, and easy to understand.
 
     	        MONTH ANALYSIS:
 
@@ -69,18 +86,23 @@ public class AIInsightService {
 
     	        SPENDING ANALYSIS:
 
-    	        - Identify the biggest spending category only for the
-    	          current month.
-    	        - If the current month has no expenses, do not identify an
-    	          older category as the current month's biggest category.
-    	        - Mention the most important spending pattern supported
-    	          by the data.
-    	        - If there is no current-month spending pattern, say so.
-    	        - Give one realistic financial suggestion.
-    	        - Do not describe an expense as recurring unless the data
-    	          supports that it is recurring.
-    	        - Do not describe an expense as unusual or exceptional unless
-    	          the available data provides enough evidence to support that.
+    	        SPENDING ANALYSIS:
+
+				- Identify the biggest spending category only for the
+				  current month.
+				- If the current month has no expenses, do not identify an
+				  older category as the current month's biggest category.
+				- Focus on the most meaningful spending pattern rather than
+				  simply listing all categories.
+				- If there is a large expense, consider the transaction name
+				  before describing its significance.
+				- If there is no meaningful current-month spending pattern,
+				  say so naturally.
+				- Give one realistic financial suggestion.
+				- Do not describe an expense as recurring unless the data
+				  supports that it is recurring.
+				- Do not describe an expense as unusual or exceptional unless
+				  the available data provides enough evidence to support that.
 
     	        ESSENTIAL EXPENSES:
 
@@ -102,23 +124,26 @@ public class AIInsightService {
 
     	        SUGGESTIONS:
 
-    	        - Prefer practical suggestions such as:
-    	          budgeting,
-    	          maintaining an emergency fund,
-    	          tracking expenses regularly,
-    	          reviewing recurring expenses,
-    	          or setting spending limits for genuinely discretionary expenses.
-    	        - Do not provide investment, tax, legal, or financial-product
-    	          recommendations.
-    	        - Only provide an annual saving calculation if reducing
-    	          that expense is genuinely realistic and appropriate.
-    	        - Do not calculate savings from essential or one-time
-    	          expenses.
-    	        - If there are no current-month expenses, suggest continuing
-    	          to record expenses so that meaningful spending patterns
-    	          can be identified in future months.
-    	        - Do not praise or criticize the user's financial habits
-    	          unless the provided data supports it.
+				- Give practical advice that is directly relevant to the
+				  user's current financial situation.
+				- Avoid generic advice when the available data supports
+				  a more specific suggestion.
+				- Prefer suggestions such as:
+				  budgeting,
+				  maintaining an emergency fund,
+				  reviewing recurring expenses,
+				  or setting spending limits for genuinely discretionary expenses.
+				- Do not provide investment, tax, legal, or financial-product
+				  recommendations.
+				- Only provide an annual saving calculation if reducing
+				  that expense is genuinely realistic and appropriate.
+				- Do not calculate savings from essential or one-time
+				  expenses.
+				- If there are no current-month expenses, suggest continuing
+				  to record expenses so that meaningful spending patterns
+				  can be identified in future months.
+				- Do not praise or criticize the user's financial habits
+				  unless the provided data supports it.
 
     	        Financial data:
 
@@ -126,15 +151,24 @@ public class AIInsightService {
 
     	        Return exactly two sections:
 
-    	        SUMMARY:
-
-    	        Write a short 1-2 sentence explanation of the user's financial
-    	        situation and the most important spending pattern.
-
-    	        SUGGESTION:
-
-    	        Give one practical and realistic financial suggestion based
-    	        only on the provided data.
+				SUMMARY:
+				
+				Write a short 1-2 sentence explanation in a natural,
+				conversational tone.
+				
+				Focus on the most important financial pattern and what
+				it means for the user.
+				
+				Do not simply repeat the total income, total expense,
+				and balance unless those numbers are important to explain
+				the insight.
+				
+				SUGGESTION:
+				
+				Give one practical and specific financial suggestion
+				based only on the provided data.
+				
+				Write it naturally as advice to the user.
 
     	        """.formatted(financialData);
 

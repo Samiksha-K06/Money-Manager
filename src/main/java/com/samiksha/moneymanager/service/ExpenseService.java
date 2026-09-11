@@ -44,6 +44,19 @@ public class ExpenseService {
 		return list.stream().map(this::toDTO).toList();
 	}
 	
+	// Get total expenses between two dates for current user
+	public BigDecimal getTotalExpenseBetweenForCurrentUser(
+	        LocalDate startDate,
+	        LocalDate endDate) {
+
+	    return getExpensesBetweenForCurrentUser(startDate, endDate)
+	            .stream()
+	            .map(ExpenseDTO::getAmount)
+	            .reduce(BigDecimal.ZERO, BigDecimal::add);
+	}
+	
+	
+	
 	//delete expense by id for current user
 	public void deleteExpense(Long expenseId) {
 		ProfileEntity profile = profileService.getCurrentProfile();

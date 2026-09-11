@@ -29,10 +29,17 @@ public class DashboardService {
     private final ProfileService profileService;
     private final AIInsightService aiInsightService;
 
-    public Map<String, Object> getDashboardData() {
+    public Map<String, Object> getDashboardData(YearMonth selectedMonth) {
 
         ProfileEntity profile =
                 profileService.getCurrentProfile();
+        
+        if (selectedMonth == null) {
+            selectedMonth = YearMonth.now();
+        }
+
+        LocalDate monthStart = selectedMonth.atDay(1);
+        LocalDate monthEnd = selectedMonth.atEndOfMonth();
 
         Map<String, Object> returnValue =
                 new LinkedHashMap<>();
@@ -41,11 +48,36 @@ public class DashboardService {
         // Existing dashboard data
         // ------------------------------------------------
 
+     // ------------------------------------------------
+        // Monthly
+        // ------------------------------------------------
+        
+        List<IncomeDTO> monthlyIncomes =
+                incomeService.getIncomesBetweenForCurrentUser(
+                        monthStart,
+                        monthEnd
+                );
+
+        List<ExpenseDTO> monthlyExpenses =
+                expenseService.getExpensesBetweenForCurrentUser(
+                        monthStart,
+                        monthEnd
+                );
+        
+        
         List<IncomeDTO> latestIncomes =
-                incomeService.getLatest5IncomesForCurrentUser();
+                monthlyIncomes.stream()
+                        .sorted((a, b) ->
+                                b.getDate().compareTo(a.getDate()))
+                        .limit(5)
+                        .toList();
 
         List<ExpenseDTO> latestExpenses =
-                expenseService.getLatest5ExpensesForCurrentUser();
+                monthlyExpenses.stream()
+                        .sorted((a, b) ->
+                                b.getDate().compareTo(a.getDate()))
+                        .limit(5)
+                        .toList();
 
         List<RecentTransactionDTO> recentTransactions =
                 Stream.concat(
@@ -96,16 +128,22 @@ public class DashboardService {
                     return cmp;
                 })
                 .collect(Collectors.toList());
+        
+ 
 
         // ------------------------------------------------
         // Existing totals
         // ------------------------------------------------
 
         BigDecimal totalIncome =
-                incomeService.getTotalIncomeForCurrentUser();
+                monthlyIncomes.stream()
+                        .map(IncomeDTO::getAmount)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal totalExpense =
-                expenseService.getTotalExpenseForCurrentUser();
+                monthlyExpenses.stream()
+                        .map(ExpenseDTO::getAmount)
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         BigDecimal totalBalance =
                 totalIncome.subtract(totalExpense);
@@ -146,6 +184,7 @@ public class DashboardService {
 
         AIInsightDTO aiInsight =
                 generateAIInsight(
+                		selectedMonth,
                         totalIncome,
                         totalExpense,
                         totalBalance
@@ -161,15 +200,16 @@ public class DashboardService {
 
     
     private AIInsightDTO generateAIInsight(
+    		YearMonth selectedMonth,
             BigDecimal totalIncome,
             BigDecimal totalExpense,
             BigDecimal totalBalance) {
 
         // ------------------------------------------------
-        // Determine current month using actual calendar date
+    	// Determine selected month and previous month
         // ------------------------------------------------
 
-        YearMonth currentMonth = YearMonth.now();
+        YearMonth currentMonth = selectedMonth;
 
         YearMonth previousMonth =
                 currentMonth.minusMonths(1);
@@ -334,6 +374,7 @@ public class DashboardService {
 
         String financialData =
                 buildFinancialData(
+                        selectedMonth,
                         totalIncome,
                         totalExpense,
                         totalBalance,
@@ -415,6 +456,7 @@ public class DashboardService {
 
 
     private String buildFinancialData(
+    		YearMonth selectedMonth,
             BigDecimal totalIncome,
             BigDecimal totalExpense,
             BigDecimal totalBalance,
@@ -427,7 +469,7 @@ public class DashboardService {
             BigDecimal previousHighestAmount,
             String percentageChange) {
 
-        YearMonth currentMonth = YearMonth.now();
+        YearMonth currentMonth = selectedMonth;
         YearMonth previousMonth = currentMonth.minusMonths(1);
 
         StringBuilder data = new StringBuilder();
@@ -435,13 +477,13 @@ public class DashboardService {
         // Overall financial information
         data.append("OVERALL FINANCIAL DATA:\n");
 
-        data.append("TOTAL INCOME (ALL RECORDED TRANSACTIONS):\n");
+        data.append("SELECTED MONTH INCOME:\n");
         data.append("₹").append(totalIncome).append("\n\n");
 
-        data.append("TOTAL EXPENSE (ALL RECORDED TRANSACTIONS):\n");
+        data.append("SELECTED MONTH EXPENSE:\n");
         data.append("₹").append(totalExpense).append("\n\n");
 
-        data.append("CURRENT BALANCE:\n");
+        data.append("SELECTED MONTH BALANCE:\n");
         data.append("₹").append(totalBalance).append("\n\n");
 
 
